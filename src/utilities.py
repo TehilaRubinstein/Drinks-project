@@ -1,5 +1,3 @@
-from typing import List, Dict
-from pydantic import BaseModel
 from src import constants, data_processing
 from fastapi import HTTPException
 import logging
@@ -7,15 +5,6 @@ import pandas as pd
 
 df = data_processing.data.data_frame
 num_of_ingredients = data_processing.data.num_of_ingredients
-
-class Drink(BaseModel):
-    name: str
-    alcoholic: str
-    category: str
-    glass: str
-    ingredients: List[Dict]
-    instructions: str
-
 
 """
 This function creates a json that contains the drink detail and recipe from the 
@@ -59,6 +48,19 @@ async def get_drink(drink_id):
     result = to_json(drink_record=df[drink_id_cond])
     return result
 
+"""
+This function filters the given dataframe by the given ingredient.
+@:param ingredient: the ingredient to filter the dataframe with
+@:param df: the dataframe to filter
+@:return the filtered dataframe
+"""
+def filter_by_single_condition(ingredient, df):
+    ingredient = " " + ingredient + " "
+    contain_ingredient_cond = df.apply(
+        lambda row: (" " + row.astype(str) + " ").str.
+        contains(ingredient, case=False).any(), axis=1)
+    return df[contain_ingredient_cond]
+
 
 """
 This function gets list of ingredients and return dataframe that contains all 
@@ -66,17 +68,10 @@ the drinks that at least one of the ingredients appear in their recipe.
 @:param ingredients - the list of ingredients
 @return results - the filtered dataframe 
 """
-def get_df_contains_ingredient(ingredients):
+def get_df_contains_any_ingredient_in_list(ingredients):
     results = None
     for ingredient in ingredients:
-        ingredient = " " + ingredient + " "
-        contain_ingredient_cond = df.apply(
-            lambda row: (" " + row.astype(str) + " ").str.
-            contains(ingredient, case=False).any(), axis=1)
-
-        temp_results = df[contain_ingredient_cond]  # drinks that contain
-        # the current ingredient
-
+        temp_results = filter_by_single_condition(ingredient, df)
         if results is None:  # update of the first iteration
             results = temp_results
 
@@ -84,3 +79,21 @@ def get_df_contains_ingredient(ingredients):
             results = (pd.concat(objs=[results, temp_results]).
                        drop_duplicates().reset_index(drop=True))
     return results
+
+
+"""
+This function gets list of ingredients and return dataframe that contains all 
+the drinks that all of the ingredients appear in their recipe.
+@:param ingredients - the list of ingredients
+@return results - the filtered dataframe 
+"""
+def get_df_contains_all_ingredient_in_list(ingredients):
+    have_been_filtered = False
+    results = df
+    for ingredient in ingredients:
+        results = filter_by_single_condition(ingredient, results)
+        if results.shape[0] != df.shape[0]:
+            have_been_filtered = True
+    if have_been_filtered:
+        return results
+    return None
