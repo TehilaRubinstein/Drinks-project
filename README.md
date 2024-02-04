@@ -11,8 +11,10 @@
     #### for example: http://127.0.0.1:8000/drink/14029
 3. To get list of drinks by their id numbers - use the url: http://127.0.0.1:8000/drinks_by_ids/?id=<id_num_1>&id=<id_num_2> (replace <id_num_i> with the id number you want). the list can be in any length you choose.
     #### for example: http://127.0.0.1:8000/drinks_by_ids/?id=14029&id=15395&id=15423
-4. To get list of drinks that contain at least one of an ingredients list - use the url: http://127.0.0.1:8000/drinks_by_ingredients/?ingredients=<ingredient_1>&ingredients=<ingredient_2> (replace <ingredient_i> with the i'th ingredient from the ingredients list)
-    #### for example: http://127.0.0.1:8000/drinks_by_ingredients/?ingredients=vodka&ingredients=orange
+4. To get list of drinks that contain at least one of an ingredients list - use the url: http://127.0.0.1:8000/drinks_by_ingredients/any/?ingredients=<ingredient_1>&ingredients=<ingredient_2> (replace <ingredient_i> with the i'th ingredient from the ingredients list)
+    #### for example: http://127.0.0.1:8000/drinks_by_ingredients/any/?ingredients=vodka&ingredients=orange
+5. To get list of drinks that contain all of an ingredients list - use the url: http://127.0.0.1:8000/drinks_by_ingredients/all/?ingredients=<ingredient_1>&ingredients=<ingredient_2> (replace <ingredient_i> with the i'th ingredient from the ingredients list)
+    #### for example: http://127.0.0.1:8000/drinks_by_ingredients/all/?ingredients=vodka&ingredients=orange
 
 ### Logs:
 Logs of the app can be found under: logs/ ProjectLogs_{Date}.log .
